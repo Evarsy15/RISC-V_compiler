@@ -1,16 +1,16 @@
 #include "wire.h"
 
-#define wire_iter std::map<wire*, int>::iterator
+typedef std::map<wire*, int>::iterator wire_iter;
 
-port::port(Unit* belonged_unit, bool port_type, int port_width=1, std::string port_name="") {
+port::port(Unit* belonged_unit, int port_side, int port_width=1, std::string port_name="") {
     assert(belonged_unit != NULL);
     assert(1 <= port_width && port_width <= SIGNAL_MAX);
 
     this->belonged_unit = belonged_unit;
-    this->port_type     = port_type;
     this->port_width    = port_width;
     this->port_name     = port_name;
     this->port_bits     = 0;
+    this->port_side     = port_side;
     this->port_mask     = bitmap::bitmask_gen(0, port_width);
     this->wire_alloc    = new bitmap(port_width);
 }
@@ -34,8 +34,8 @@ void port::link(wire* connected_wire, int offset) {
 }
 
 void port::send() {
-    assert(port_type == SEND_PORT);
-    
+    assert(port_side & port::SEND);
+
     wire_iter it;
     for (it = wires.begin(); it != wires.end(); it++) {
         wire*  wire_seg = (*it).first;
@@ -47,7 +47,7 @@ void port::send() {
 }
 
 void port::receive(sig_t signal, wire* connected_wire) {
-    assert(port_type == RECEIVE_PORT);
+    assert(port_side & port::RECEIVE);
 
     wire_iter pt;
     assert((pt = wires.find(connected_wire)) != wires.end());
@@ -79,8 +79,8 @@ wire::wire(int wire_width = 1, std::string wire_name = "") {
     this->wire_name  = wire_name;
 }
 
-void wire::link(port* connecting_port, bool port_type) {
-    if (port_type)
+void wire::link(port* connecting_port, bool connecting_type) {
+    if (connecting_type)
         this->send_port    = connecting_port;
     else
         this->receive_port = connecting_port;
@@ -88,5 +88,6 @@ void wire::link(port* connecting_port, bool port_type) {
 
 void wire::transport(sig_t signal) {
     assert(this->send_port != NULL && this->receive_port != NULL);
+
     this->receive_port->receive(signal, this);
 }

@@ -1,6 +1,8 @@
 /*
     Combinatorial Logic Units
 */
+#ifndef COMBINATORIAL_H
+#define COMBINATORIAL_H
 
 #include <string>
 #include <vector>
@@ -17,6 +19,10 @@ class AND: public Unit {
     void send();
     void receive();
     void cycle() {} // combinatorial unit
+
+    uid_t       get_id()     { return and_id; }
+    std::string get_name()   { return and_name; }
+    void        print_name() { std::cout << and_name; }
   
   private:
     port* in1;
@@ -53,12 +59,16 @@ class OR: public Unit {
 
 class MUX : public Unit {
   public:
-    MUX(int port_num, std::string name);
+    MUX(int port_num, std::string mux_name);
     ~MUX();
 
     void send();
     void receive();
     void cycle() {} // combinatrorial unit
+
+    uid_t       get_id()     { return mux_id; }
+    std::string get_name()   { return mux_name; }
+    void        print_name() { std::cout << mux_name; }
 
   private:
     int port_num; // input port num
@@ -70,3 +80,5 @@ class MUX : public Unit {
     uid_t        mux_id;
     std::string  mux_name;
 };
+
+#endif

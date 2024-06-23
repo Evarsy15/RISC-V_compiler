@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#define uid_t unsigned // unit id type
-
 class Unit {
   public:
     virtual void send() = 0;    // send signals along output ports

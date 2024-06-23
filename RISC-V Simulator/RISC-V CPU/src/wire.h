@@ -1,14 +1,14 @@
+#ifndef WIRE_H
+#define WIRE_H
+
 #include <assert.h>
 #include <map>
 #include <string>
 #include "unit.h"
+#include "utils.h"
 #include "bitmap.h"
 
-typedef unsigned long long sig_t;
-
 #define SIGNAL_MAX 64
-#define RECEIVE_PORT 0
-#define SEND_PORT    1
 
 class wire;
 
@@ -17,7 +17,7 @@ class wire;
 */
 class port {
   public:
-    port(Unit* belonged_unit, bool port_type, int port_width, std::string port_name);
+    port(Unit* belonged_unit, int port_side, int port_width, std::string port_name);
     ~port();
 
     void  link    (wire* connected_wire, int offset);
@@ -28,11 +28,14 @@ class port {
 
     std::string get_name()   { return port_name; }
     void        print_name() { std::cout << port_name; }
+
+    const static int RECEIVE = 1;
+    const static int SEND    = 2;
   
   private:
-    bool   port_type;  // 0 : receiving port, 1 : sending port
     int    port_width; // port width
     sig_t  port_bits;  // actual port data
+    int    port_side;  // mask for port side (receive / send / both)
     mask_t port_mask;  // mask for port_bits by port_width
 
     Unit* belonged_unit;
@@ -52,7 +55,7 @@ class wire {
   public:
     wire(int wire_width, std::string wire_name);
     
-    void link(port* connecting_port, bool port_type);
+    void link(port* connecting_port, bool connecting_type);
     void transport(sig_t signal);
     
     int         get_width()  { return wire_width; }
@@ -67,3 +70,4 @@ class wire {
     std::string wire_name;
 };
 
+#endif
