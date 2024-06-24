@@ -15,7 +15,7 @@ class DFA {
     bool add_state(string name, bool accept);
     bool add_transition(string start, char symbol, string dest);
     bool delete_state(string name);
-    bool delete_transition(string start, char symbol, string dest);
+    bool delete_transition(string start, char symbol);
 
     bool is_accepted(string input);
     bool is_valid_state(string name);

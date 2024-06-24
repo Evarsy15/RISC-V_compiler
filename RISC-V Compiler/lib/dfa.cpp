@@ -39,6 +39,30 @@ bool DFA::add_transition(string start, char symbol, string dest) {
 }
 
 /*
+    Removes a state of DFA with given name.
+*/
+bool DFA::delete_state(string name) {
+    if (is_valid_state(name)) {
+        state_set.erase(name);
+        accept_table.erase(name);
+        for (set<char>::iterator sym = symbol_set.begin(); sym != symbol_set.end(); sym++)
+            delete_transition(name, *sym);
+        return true;
+    } else return false;
+}
+
+/*
+    Removes a transition of DFA.
+*/
+bool DFA::delete_transition(string start, char symbol) {
+    pair<string, char> factor = make_pair(start, symbol);
+    if (transition.find(factor) != transition.end()) {
+        transition.erase(factor);
+        return true;
+    } else return false;
+}
+
+/*
     Returns whether the input string is accepted by DFA.
 */
 bool DFA::is_accepted(string input) {
